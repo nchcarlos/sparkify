@@ -1,0 +1,97 @@
+#!/bin/bash
+
+CONTAINER_NAME=dev-postgres
+INIT_PASSWORD=Pass2020!
+
+curr_dir=$PWD
+script_dir=$(dirname $(realpath ${BASH_SOURCE[0]}))
+
+function down {
+	pushd $script_dir
+	docker-compose down
+	popd
+}
+
+function startContainer {
+	echo start docker container ${CONTAINER_NAME}...
+	already_running=$(docker container ls -a -f status=running | grep ${CONTAINER_NAME})
+	if [[ ! -z $already_running ]];
+	then
+		echo $CONTAINER_NAME is already running
+		echo docker ps:
+		docker ps -a -f name=${CONTAINER_NAME}
+		exit 0
+	fi
+
+	container_exists=$(docker container ls -a | grep ${CONTAINER_NAME})
+	if [[ ! -z $container_exists ]];
+	then
+		docker start ${CONTAINER_NAME}
+	else
+		docker run -d \
+			--name ${CONTAINER_NAME} \
+			-e POSTGRES_PASSWORD=${INIT_PASSWORD} \
+			-v ${HOME}/postgres-data/:/var/lib/postgresql/data \
+			-p 5432:5432 \
+			postgres
+	fi
+	echo docker ps:
+	docker ps -a -f name=${CONTAINER_NAME}
+	exit $?
+}
+
+function stopContainer {
+	echo stop docker container $CONTAINER_NAME
+	docker stop $CONTAINER_NAME
+ }
+
+function removeContainer {
+	echo remove container
+}
+
+function up {
+	pushd $script_dir
+	docker-compose up -d
+	popd
+}
+
+start_flag=0
+stop_flag=0
+while (( "$#" )); do
+	case "$1" in
+		start)
+			start_flag=1
+			shift
+			;;
+		stop)
+			stop_flag=1
+			shift
+			;;
+		down)
+			compose_down=1
+			shift
+			;;
+		up)
+			compose_up=1
+			shift
+			;;
+		-*|--*=) # unsupported flags
+			echo "Error: Unsupported flag $1" >&2
+			exit 1
+			;;
+	esac
+done
+
+if [[ $start_flag -eq 1 ]];
+then
+	startContainer
+elif [[ $stop_flag -eq 1 ]];
+then
+	stopContainer
+elif [[ $compose_up -eq 1 ]];
+then
+	up
+elif [[ $compose_down -eq 1 ]];
+then
+	down
+fi
