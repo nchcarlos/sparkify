@@ -10,13 +10,13 @@ Using the song and log datasets, you'll need to create a star schema optimized f
 1. **users** - users in the app
    - *user_id, first_name, last_name, gender, level*
 
-2. songs - songs in music database
+1. **songs** - songs in music database
     - *song_id, title, artist_id, year, duration*
 
-3. artists - artists in music database
+1. **artists** - artists in music database
     - *artist_id, name, location, latitude, longitude*
 
-1. time - timestamps of records in songplays broken down into specific units
+1. **time** - timestamps of records in songplays broken down into specific units
     - *start_time, hour, day, week, month, year, weekday*
 
 # Project Template
