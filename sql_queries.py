@@ -23,7 +23,7 @@ songplay_table_create = ("""CREATE TABLE songplays
 
 user_table_create = ("""CREATE TABLE users
 (
-    user_id TEXT,
+    user_id TEXT PRIMARY KEY,
     first_name TEXT,
     last_name TEXT,
     gender TEXT,
@@ -32,7 +32,7 @@ user_table_create = ("""CREATE TABLE users
 
 song_table_create = ("""CREATE TABLE songs
 (
-    song_id TEXT,
+    song_id TEXT PRIMARY KEY,
     title TEXT,
     artist_id TEXT,
     year INTEGER,
@@ -41,7 +41,7 @@ song_table_create = ("""CREATE TABLE songs
 
 artist_table_create = ("""CREATE TABLE artists
 (
-    artist_id TEXT,
+    artist_id TEXT PRIMARY KEY,
     name TEXT,
     location TEXT,
     latitude FLOAT,
@@ -67,11 +67,15 @@ songplay_table_insert = ("""
 user_table_insert = ("""
 """)
 
-song_table_insert = ("""
-""")
+song_table_insert = '''INSERT INTO songs
+VALUES (%s, %s, %s, %s, %s)
+ON CONFLICT (song_id)
+DO NOTHING'''
 
-artist_table_insert = ("""
-""")
+artist_table_insert = '''INSERT INTO artists
+VALUES (%s, %s, %s, %s, %s)
+ON CONFLICT (artist_id)
+DO NOTHING'''
 
 time_table_insert = ("""
 """)
