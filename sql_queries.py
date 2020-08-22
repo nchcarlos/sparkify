@@ -8,7 +8,7 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 
 # CREATE TABLES
 
-songplay_table_create = ("""CREATE TABLE songplays
+songplay_table_create = """CREATE TABLE songplays
 (
     songplay_id SERIAL UNIQUE,
     start_time TIMESTAMP,
@@ -19,25 +19,25 @@ songplay_table_create = ("""CREATE TABLE songplays
     session_id INTEGER,
     location TEXT,
     user_agent TEXT
-)""")
+)"""
 
-user_table_create = ("""CREATE TABLE users
+user_table_create = """CREATE TABLE users
 (
-    user_id TEXT PRIMARY KEY,
+    user_id INTEGER PRIMARY KEY,
     first_name TEXT,
     last_name TEXT,
     gender TEXT,
     level TEXT
-)""")
+)"""
 
-song_table_create = ("""CREATE TABLE songs
+song_table_create = """CREATE TABLE songs
 (
     song_id TEXT PRIMARY KEY,
     title TEXT,
     artist_id TEXT,
     year INTEGER,
     duration FLOAT
-)""")
+)"""
 
 artist_table_create = ("""CREATE TABLE artists
 (
@@ -48,42 +48,62 @@ artist_table_create = ("""CREATE TABLE artists
     longitude FLOAT
 )""")
 
-time_table_create = ("""CREATE TABLE time
+time_table_create = """CREATE TABLE time
 (
     start_time TIMESTAMP,
     hour INTEGER,
-    day TEXT,
+    day INTEGER,
     week INTEGER,
-    month TEXT,
+    month INTEGER,
     year INTEGER,
     weekday INTEGER
-)""")
+)"""
 
 # INSERT RECORDS
 
-songplay_table_insert = ("""
-""")
+songplay_table_insert = """INSERT INTO songplays
+(
+    start_time, user_id, level,
+    song_id,
+    artist_id,
+    session_id, location, user_agent
+)
+VALUES
+(
+    %s, %s, %s,
+    (
+        SELECT song_id
+        FROM songs
+        WHERE LOWER(TRIM(title)) = lower(trim('%s'))
+    ),
+    (
+        SELECT artist_id
+        FROM artists
+        WHERE LOWER(TRIM(name)) = lower(trim('%s'))
+    ),
+    %s, %s, %s
+)"""
 
-user_table_insert = ("""
-""")
+user_table_insert = """INSERT INTO users
+VALUES (%s, %s, %s, %s, %s)
+ON CONFLICT (user_id)
+DO NOTHING"""
 
-song_table_insert = '''INSERT INTO songs
+song_table_insert = """"INSERT INTO songs
 VALUES (%s, %s, %s, %s, %s)
 ON CONFLICT (song_id)
-DO NOTHING'''
+DO NOTHING"""
 
-artist_table_insert = '''INSERT INTO artists
+artist_table_insert = """INSERT INTO artists
 VALUES (%s, %s, %s, %s, %s)
 ON CONFLICT (artist_id)
-DO NOTHING'''
+DO NOTHING"""
 
-time_table_insert = ("""
-""")
+time_table_insert = """INSERT INTO time VALUES ()"""
 
 # FIND SONGS
 
-song_select = ("""
-""")
+song_select = """SELECT FROM songs"""
 
 # QUERY LISTS
 
