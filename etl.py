@@ -39,16 +39,18 @@ def process_log_file(cur, filepath):
     # open log file
     df = pd.read_json(filepath, orient='records', lines=True)
 
-    # we have to divide the ts data to convert it properly
+    # we have to divide the ts data to convert it properly and we have to handle
+    # missing values for userId
     df['ts_sec'] = df['ts'].apply(lambda x: x / 1000)
+    df['userId'] = df['userId'].apply(lambda x: None if isinstance(x, str) else x)
 
     # convert timestamp column to datetime
     t = pd.to_datetime(df['ts_sec'], unit='s')
     df['ts'] = t
+    df['start_time'] = df['ts'].dt.time
 
     # filter by NextSong action
     songplay_data = df[df['page'] == 'NextSong']
-    songplay_data['start_time'] = songplay_data['ts'].dt.time
 
     songplay_cols = [
         'start_time',
@@ -79,39 +81,28 @@ def process_log_file(cur, filepath):
         'level'
     ]
 
+    # insert songplay records
     for _, row in songplay_data[songplay_cols].iterrows():
-        # print(tuple(row.values))
         cur.execute(songplay_table_insert, tuple(row.values))
 
-    # # insert time data records
-    time_data = songplay_data[['ts', 'start_time']]
-    time_data['hour'] = time_data['ts'].dt.hour
-    time_data['day'] = time_data['ts'].dt.day
-    time_data['week'] = time_data['ts'].dt.week
-    time_data['month'] = time_data['ts'].dt.month
-    time_data['year'] = time_data['ts'].dt.year
-    time_data['weekday'] = time_data['ts'].dt.weekday
+    # insert time data records
+    time_data = df.copy()
+    time_data['hour'] = df['ts'].dt.hour
+    time_data['day'] = df['ts'].dt.day
+    time_data['week'] = df['ts'].dt.isocalendar().week
+    time_data['month'] = df['ts'].dt.month
+    time_data['year'] = df['ts'].dt.year
+    time_data['weekday'] = df['ts'].dt.weekday
 
-    # for i, row in time_df.iterrows():
-    #     cur.execute(time_table_insert, list(row))
+    for _, row in time_data[time_cols].iterrows():
+        cur.execute(time_table_insert, tuple(row))
 
-    # # load user table
-    # user_data = df[df['userId'] != '']
+    # load user table
+    user_data = df[df['userId'].notnull()]
 
-    # # insert user records
-    # for _, row in user_data[user_cols].iterrows():
-    #     cur.execute(user_table_insert, tuple(row.values))
-
-    # # insert songplay records
-    # for index, row in df.iterrows():
-
-    #     # get songid and artistid from song and artist tables
-    #     results = cur.execute(song_select, (row.song, row.artist, row.length))
-    #     songid, artistid = results if results else None, None
-
-    #     # insert songplay record
-    #     songplay_data =
-    #     cur.execute(songplay_table_insert, songplay_data)
+    # insert user records
+    for _, row in user_data[user_cols].iterrows():
+        cur.execute(user_table_insert, tuple(row.values))
 
 def process_data(cur, conn, filepath, func):
     # get all files matching extension from directory
