@@ -8,7 +8,8 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 
 # CREATE TABLES
 
-songplay_table_create = """CREATE TABLE songplays
+songplay_table_create = """
+CREATE TABLE songplays
 (
     songplay_id SERIAL UNIQUE,
     start_time TIME,
@@ -19,36 +20,44 @@ songplay_table_create = """CREATE TABLE songplays
     session_id INTEGER,
     location TEXT,
     user_agent TEXT
-)"""
+)
+"""
 
-user_table_create = """CREATE TABLE users
+user_table_create = """
+CREATE TABLE users
 (
     user_id INTEGER PRIMARY KEY,
     first_name TEXT,
     last_name TEXT,
     gender TEXT,
     level TEXT
-)"""
+)
+"""
 
-song_table_create = """CREATE TABLE songs
+song_table_create = """
+CREATE TABLE songs
 (
     song_id TEXT PRIMARY KEY,
     title TEXT,
     artist_id TEXT,
     year INTEGER,
     duration FLOAT
-)"""
+)
+"""
 
-artist_table_create = ("""CREATE TABLE artists
+artist_table_create = """
+CREATE TABLE artists
 (
     artist_id TEXT PRIMARY KEY,
     name TEXT,
     location TEXT,
     latitude FLOAT,
     longitude FLOAT
-)""")
+)
+"""
 
-time_table_create = """CREATE TABLE time
+time_table_create = """
+CREATE TABLE time
 (
     start_time TIME PRIMARY KEY,
     hour INTEGER,
@@ -57,7 +66,8 @@ time_table_create = """CREATE TABLE time
     month INTEGER,
     year INTEGER,
     weekday INTEGER
-)"""
+)
+"""
 
 # INSERT RECORDS
 
