@@ -16,6 +16,7 @@ def process_song_file(cur, filepath):
         'year',
         'duration'
     ]
+
     artist_cols = [
         'artist_id',
         'artist_name',
@@ -24,16 +25,11 @@ def process_song_file(cur, filepath):
         'artist_longitude'
     ]
 
-    # We need to rename the columns from the log file to match what is defined
-    # in the database. It turns out we can just strip the artist_ prefix from
-    # all the fields except artist_id.
-    artist_col_map = {c: c.replace('artist_', '') for c in artist_cols[1:]}
-
     # assuming 1 line per file
     _, song_data = next(df[song_cols].iterrows())
     cur.execute(song_table_insert, tuple(song_data.values))
 
-    _, artist_data = next(df[artist_cols].rename(columns=artist_col_map).iterrows())
+    _, artist_data = next(df[artist_cols].iterrows())
     cur.execute(artist_table_insert, tuple(artist_data.values))
 
 def process_log_file(cur, filepath):
