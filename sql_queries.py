@@ -12,7 +12,7 @@ songplay_table_create = """CREATE TABLE songplays
 (
     songplay_id SERIAL UNIQUE,
     start_time TIME,
-    user_id TEXT,
+    user_id INTEGER,
     level TEXT,
     song_id TEXT,
     artist_id TEXT,
@@ -106,7 +106,11 @@ DO NOTHING"""
 
 # FIND SONGS
 
-song_select = """SELECT FROM songs"""
+song_select = """SELECT s.title, a.name, sp.start_time
+FROM songs s
+JOIN songplays sp on sp.song_id = s.song_id
+JOIN artists a on a.artist_id = s.artist_id
+JOIN users u on u.user_id = sp.user_id"""
 
 # QUERY LISTS
 
