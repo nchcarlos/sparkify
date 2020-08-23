@@ -106,11 +106,12 @@ DO NOTHING"""
 
 # FIND SONGS
 
-song_select = """SELECT s.title, a.name, sp.start_time
+song_select = """SELECT s.title, a.name as artist_name, sp.start_time, t.year,
+    t.month, t.day, t.weekday
 FROM songs s
-JOIN songplays sp on sp.song_id = s.song_id
+JOIN songplays sp on sp.song_id = s.song_id and sp.artist_id = s.artist_id
 JOIN artists a on a.artist_id = s.artist_id
-JOIN users u on u.user_id = sp.user_id"""
+JOIN time t on t.start_time = sp.start_time"""
 
 # QUERY LISTS
 
