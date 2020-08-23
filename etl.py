@@ -40,15 +40,18 @@ def process_log_file(cur, filepath):
     # open log file
     df = pd.read_json(filepath, orient='records', lines=True)
 
-    # we have to divide the ts data to convert it properly and we have to handle
-    # missing values for userId
-    df['ts_sec'] = df['ts'].apply(lambda x: x / 1000)
+    # we have to handle missing values for userId
     df['userId'] = df['userId'].apply(lambda x: None if isinstance(x, str) else x)
 
     # convert timestamp column to datetime
-    t = pd.to_datetime(df['ts_sec'], unit='s')
-    df['ts'] = t
-    df['start_time'] = df['ts'].dt.time
+    t = pd.to_datetime(df['ts'], unit='ms')
+    df['start_time'] = t.dt.time
+    df['hour'] = t.dt.hour
+    df['day'] = t.dt.day
+    df['week'] = t.dt.isocalendar().week
+    df['month'] = t.dt.month
+    df['year'] = t.dt.year
+    df['weekday'] = t.dt.weekday
 
     # filter by NextSong action
     songplay_data = df[df['page'] == 'NextSong']
@@ -87,15 +90,7 @@ def process_log_file(cur, filepath):
         cur.execute(songplay_table_insert, tuple(row.values))
 
     # insert time data records
-    time_data = df.copy()
-    time_data['hour'] = df['ts'].dt.hour
-    time_data['day'] = df['ts'].dt.day
-    time_data['week'] = df['ts'].dt.isocalendar().week
-    time_data['month'] = df['ts'].dt.month
-    time_data['year'] = df['ts'].dt.year
-    time_data['weekday'] = df['ts'].dt.weekday
-
-    for _, row in time_data[time_cols].iterrows():
+    for _, row in df[time_cols].iterrows():
         cur.execute(time_table_insert, tuple(row))
 
     # load user table
