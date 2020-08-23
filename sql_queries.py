@@ -11,7 +11,7 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 songplay_table_create = """CREATE TABLE songplays
 (
     songplay_id SERIAL UNIQUE,
-    start_time TIMESTAMP,
+    start_time TIME,
     user_id TEXT,
     level TEXT,
     song_id TEXT,
@@ -50,7 +50,7 @@ artist_table_create = ("""CREATE TABLE artists
 
 time_table_create = """CREATE TABLE time
 (
-    start_time TIMESTAMP,
+    start_time TIME PRIMARY KEY,
     hour INTEGER,
     day INTEGER,
     week INTEGER,
@@ -74,12 +74,12 @@ VALUES
     (
         SELECT song_id
         FROM songs
-        WHERE LOWER(TRIM(title)) = lower(trim('%s'))
+        WHERE LOWER(TRIM(title)) = lower(trim(%s))
     ),
     (
         SELECT artist_id
         FROM artists
-        WHERE LOWER(TRIM(name)) = lower(trim('%s'))
+        WHERE LOWER(TRIM(name)) = lower(trim(%s))
     ),
     %s, %s, %s
 )"""
@@ -89,7 +89,7 @@ VALUES (%s, %s, %s, %s, %s)
 ON CONFLICT (user_id)
 DO NOTHING"""
 
-song_table_insert = """"INSERT INTO songs
+song_table_insert = """INSERT INTO songs
 VALUES (%s, %s, %s, %s, %s)
 ON CONFLICT (song_id)
 DO NOTHING"""
@@ -99,7 +99,10 @@ VALUES (%s, %s, %s, %s, %s)
 ON CONFLICT (artist_id)
 DO NOTHING"""
 
-time_table_insert = """INSERT INTO time VALUES ()"""
+time_table_insert = """INSERT INTO time
+VALUES (%s, %s, %s, %s, %s, %s, %s)
+ON CONFLICT (start_time)
+DO NOTHING"""
 
 # FIND SONGS
 
