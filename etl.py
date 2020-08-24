@@ -82,6 +82,9 @@ def process_log_file(cur, filepath):
     ]
 
     # insert songplay records
+    # sub-queries are used in the songplay_table_insert SQL to get the song_id
+    # and the artist_id so we don't have to execute extra select statements to
+    # get the data
     for _, row in songplay_data[songplay_cols].iterrows():
         cur.execute(songplay_table_insert, tuple(row.values))
 

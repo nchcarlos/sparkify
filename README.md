@@ -100,3 +100,35 @@ python etl.py
 ```
 
 The ```sql_queries.py``` script contains all of the required SQL queries and statements to create the tables and to insert data. The ```create_tables.py``` and ```etl.py``` scripts import the SQL, so the ```sql_queries.py``` script does not need to run directly.
+
+## Sample Queries
+
+- Query the most active users:
+
+```sql
+SELECT user_id, COUNT(*) activity_cnt
+FROM songplays
+WHERE user_id IS NOT NULL
+GROUP BY user_id
+ORDER BY 2 DESC;
+```
+
+- Query the most common user level
+
+```sql
+SELECT level, COUNT(level) level_cnt
+FROM songplays
+WHERE user_id IS NOT NULL
+GROUP BY level
+ORDER BY 2 DESC;
+```
+
+- Query the most popular user agent:
+
+```sql
+SELECT user_agent, COUNT(*) agent_cnt
+FROM songplays
+WHERE user_agent IS NOT NULL
+GROUP BY user_agent
+ORDER BY 2 DESC;
+```
