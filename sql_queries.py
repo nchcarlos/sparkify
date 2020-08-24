@@ -85,12 +85,12 @@ VALUES
     (
         SELECT song_id
         FROM songs
-        WHERE LOWER(TRIM(title)) = lower(trim(%s))
+        WHERE LOWER(TRIM(title)) = LOWER(TRIM(%s))
     ),
     (
         SELECT artist_id
         FROM artists
-        WHERE LOWER(TRIM(name)) = lower(trim(%s))
+        WHERE LOWER(TRIM(name)) = LOWER(TRIM(%s))
     ),
     %s, %s, %s
 )
@@ -127,12 +127,11 @@ DO NOTHING
 # FIND SONGS
 
 song_select = """
-SELECT s.title, a.name as artist_name, sp.start_time, t.year,
-    t.month, t.day, t.weekday
+SELECT s.song_id, a.artist_id
 FROM songs s
-JOIN songplays sp on sp.song_id = s.song_id and sp.artist_id = s.artist_id
-JOIN artists a on a.artist_id = s.artist_id
-JOIN time t on t.start_time = sp.start_time
+JOIN artist a
+    ON a.artist_id = s.artist_id AND LOWER(TRIM(name)) = LOWER(TRIM(%s))
+WHERE LOWER(TRIM(title)) = LOWER(TRIM(%s))
 """
 
 # QUERY LISTS
