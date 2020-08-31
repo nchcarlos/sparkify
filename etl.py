@@ -7,6 +7,14 @@ from sql_queries import (artist_table_insert, songplay_table_insert,
         song_select, song_table_insert, time_table_insert, user_table_insert)
 
 def process_song_file(cur, filepath):
+    """
+    Parse a song data file and insert the data into the songs and artists
+    databases.
+
+    arguments:
+    cur -- a cursor to perform the database operations
+    filepath -- the path to the song data log file
+    """
     df = pd.read_json(filepath, orient='records', lines=True)
 
     song_cols = [
@@ -33,6 +41,14 @@ def process_song_file(cur, filepath):
     cur.execute(artist_table_insert, tuple(artist_data.values))
 
 def process_log_file(cur, filepath):
+    """
+    Parse a log data log file and insert the data into the songplays, users, and
+    time databases.
+
+    arguments:
+    cur -- a cursor to perform the database operations
+    filepath -- the path to the log data log file
+    """
     # open log file
     df = pd.read_json(filepath, orient='records', lines=True)
 
@@ -100,6 +116,18 @@ def process_log_file(cur, filepath):
         cur.execute(user_table_insert, tuple(row.values))
 
 def process_data(cur, conn, filepath, func):
+    """
+    Process data files in the data directory. Given the filepath, this function
+    traverses the directory and extracts the paths to each JSON file. Each filepath
+    is passed as an argument to the provided function that will extract the
+    appropriate data.
+
+    arguments:
+    cur -- a cursor to perform the database operations
+    conn -- a connection to the database
+    filepath -- the path to the data directory
+    func -- a function that will process the data file
+    """
     # get all files matching extension from directory
     all_files = []
     for root, _, files in os.walk(filepath):
